@@ -1,8 +1,8 @@
-#include <stdio.h>
+//#include <stdio.h>
 #include <SoftwareSerial.h>
 #include <Servo.h>
 //#include <stdint.h>
-#include <DS1302.h>
+//#include<DS1302.h>
 #include <time.h>
 
 
@@ -26,7 +26,7 @@
 //int i,j=0;
 
 SoftwareSerial HM10(BT_RX,BT_TX);
-DS1302 rtc(6,5,4);
+//DS1302 rtc(6,5,4);
 Servo motor1;
 Servo motor2;
 Servo motor3;
@@ -34,7 +34,7 @@ Servo motor3;
 
 
 
-struct Time1 
+/*struct Time1 
 {
   int yr;
   int month;
@@ -44,15 +44,15 @@ struct Time1
   int second;
   int dayOfWeek;
   
-};
+};*/
 
 /*
 int switchStat1 = 0;
 int switchStat2 = 0;
 int switchStat3 = 0;*/
 
+int setFlag0 = 0;
 int setFlag1 = 0;
-int setFlag2 = 0;
 
 int normalMode = 0;
 int elevatorMode = 0;
@@ -63,7 +63,7 @@ int initialStat3=0;
 
 int numberOfButton = 0;
 
-int stringnum[15] = {0};
+int stringnum[20] = {0};
 
 // 년월일시분초 함수에서 쓸거
 int setYr = 0;
@@ -73,10 +73,12 @@ int setHr = 0;
 int setMinute = 0;
 int setSc = 0;
 
-//시분초 함수에서 쓸거
+//시분초 함수에서 쓸거 --> 이거를 일반 스위치 모드 타이머로 개조
 int setHr1 = 0;
 int setMinute1 = 0;
-int setSc1 = 0;
+long setSc1 = 0;
+long oldMillis;
+int onOffStat=0;
 
 
 
@@ -101,6 +103,8 @@ void elevatorSwitchServo(int stat);
 void on();
 void off();
 
+
+
 //Time t = getTime();
 
 void setup() {
@@ -111,6 +115,7 @@ void setup() {
   HM10.begin(9600);
   //Serial.print("");
   
+  //Serial.print(rtc.getTimeStr());
   while(1){
   
   Serial.println("initializing - wait for signal");
@@ -140,9 +145,23 @@ void setup() {
     string0 = inputString[0];
     string1 = inputString[1];
     string2 = inputString[2];
+
+
+    int string0num = string0-48;
+    int string1num = string1-48;
+    int string2num = string2-48;
+
+    
+    /*
     int string0num = atoi(&string0);
+    delay(50);
     int string1num = atoi(&string1);
+    delay(50);
     int string2num = atoi(&string2);
+    delay(50);*/
+    Serial.print(string0num);
+    Serial.print(string1num);
+    Serial.print(string2num);
 
 
   if (normalMode == 1){
@@ -152,6 +171,7 @@ void setup() {
 
   Serial.print("설정된 버튼수는 ");
   Serial.println(numberOfButton);
+
   
   inputString.remove(0);
 }
@@ -174,12 +194,14 @@ void loop(){
     
     outputString = Serial.readString();
     
-    HM10.println(outputString);
+    HM10.print(outputString);
     
     //HM10.println(outputString.length());
     
   }
 
+  long nowMillis = (millis()/1000);
+  
   //Time1 t;
   //t = rtc.
   
@@ -195,51 +217,169 @@ void loop(){
     //일반 스위치 모드
     char string0 = '0';
     char string1 = '0';
+    /*
+    char string2 = '0';
+    char string3 = '0';
+    char string4 = '0';
+    char string5 = '0';
+    char string6 = '0';
+    char string7 = '0';
+    char string8 = '0';
+    char string9 = '0';
+    char string10 = '0';
+    char string11 = '0';
+    char string12 = '0';
+    char string13 = '0';
+    char string14 = '0';
+    char string15 = '0';
+    char string16 = '0';
+    char string17 = '0';*/
+
     
+
     string0 = inputString[0];
     string1 = inputString[1];
-    stringnum[0] = atoi(&string0);
-    stringnum[1] = atoi(&string1);
+    
+    
+    stringnum[0] = string0-48;
+    stringnum[1] = string1-48;
 
-    if (string0 == 1 || string0 == 2 ||string0 ==3){
-
+    if ((stringnum[0] == 1) || (stringnum[0] == 2) ||(stringnum[0] ==3)){
+    //Serial.print("work");
     normalSwitchServo(numberOfButton,stringnum[0],stringnum[1]);
+    Serial.print(stringnum[0]);
+    Serial.print(stringnum[1]);
     }
 
-    else if(string0 == 4){
+    else if(stringnum[0] == 4){
+
+    //char temp[20] = {0};
+    
 
 
-      for(int i =0; i<15;i++){
-      stringnum[i]=atoi(&inputString[i]);  
+
+    
+/*
+    string2 = inputString[2];
+    string3 = inputString[3];
+    string4 = inputString[4];
+    string5 = inputString[5];
+    string6 = inputString[6];
+    string7 = inputString[7];
+    string8 = inputString[8];
+    string9 = inputString[9];
+    string10 = inputString[10];
+    string11 = inputString[11];
+    string12 = inputString[12];
+    string13 = inputString[13];
+    string14 = inputString[14];
+    string15 = inputString[15];
+    string16 = inputString[16];
+    string17 = inputString[17];
+
+    
+    stringnum[2] = atoi(&string2);
+    stringnum[3] = atoi(&string3);
+    stringnum[4] = atoi(&string4);
+    stringnum[5] = atoi(&string5);
+    stringnum[6] = atoi(&string6);
+    stringnum[7] = atoi(&string7);
+    stringnum[8] = atoi(&string8);
+    stringnum[9] = atoi(&string9);
+    stringnum[10] = atoi(&string10);
+    stringnum[11] = atoi(&string11);
+    stringnum[12] = atoi(&string12);
+    stringnum[13] = atoi(&string13);
+    stringnum[14] = atoi(&string14);
+    stringnum[15] = atoi(&string15);
+    
+*/
+
+
+      
+      char string3[18]={0};
+
+      inputString.toCharArray(string3,18);
+      
+  
+      Serial.println (string3);
+      for(int i = 2; i<16; i++){
+         stringnum[i]=string3[i]-48;
+         Serial.println(stringnum[i]);
+         
       }
+
+      Serial.println("Hello!");
+      int yrIn = 1000*stringnum[1] + 100*stringnum[2]+ 10*stringnum[3] + stringnum[4];
+      int monthIn = 10*stringnum[5] + stringnum[6];
+      int dayIn = 10*stringnum[7]+stringnum[8];
+      int hrIn = 10*stringnum[9]+stringnum[10];
+      int minuteIn = 10*stringnum[11]+stringnum[12];
+      long secondIn = 10*stringnum[13]+stringnum[14];
+      int onOffStatInput = stringnum[15];
+
+      setHr1 = hrIn;
+      setMinute1 = minuteIn;
+      setSc1 = secondIn;
+      setFlag1 = 1;
+      onOffStat = onOffStatInput;
+      oldMillis = (millis()/1000);
+      /*for (int i =0; i <16;i++){
+      Serial.print(stringnum[i]);
+      }*/
+      Serial.println(oldMillis);
+      Serial.println(setHr1);
+      Serial.println(setMinute1);
+      Serial.println(setSc1);
+      Serial.print(onOffStat);
+      
+
+      
+      //alamSettingByTime(hrIn, minuteIn ,secondIn, nowMillis);
+      Serial.print("설정완료");
+      HM10.print("설정완료");
+      
+    }
+
+    else if(stringnum[0] == 5){
+      /*
+      for(int i =0; i<16;i++){
+      stringnum[i]=atoi(&inputString[i]);  
+      }*/
+
       int yrIn = stringnum[1]*1000 + stringnum[2]*100+ stringnum[3]*10 + stringnum[4];
       int monthIn = stringnum[5]*10 + stringnum[6];
       int dayIn = stringnum[7]*10+stringnum[8];
       int hrIn = stringnum[9]*10+stringnum[10];
       int minuteIn = stringnum[11]*10+stringnum[12];
       int secondIn = stringnum[13]*10+stringnum[14];
-      
-      alamSettingByTime(hrIn, minuteIn ,secondIn);
-      
-    }
 
-    else if(string0 == 5){
       
-      for(int i =0; i<15;i++){
-      stringnum[i]=atoi(&inputString[i]);  
-      }
 
-      int yrIn = stringnum[1]*1000 + stringnum[2]*100+ stringnum[3]*10 + stringnum[4];
-      int monthIn = stringnum[5]*10 + stringnum[6];
-      int dayIn = stringnum[7]*10+stringnum[8];
-      int hrIn = stringnum[9]*10+stringnum[10];
-      int minuteIn = stringnum[11]*10+stringnum[12];
-      int secondIn = stringnum[13]*10+stringnum[14];
+
       
       alamSettingByDate(yrIn,monthIn,dayIn,hrIn,minuteIn,secondIn);
+      
+      //HM10.print("설정완료");
     }
-    
-  
+    //알람이 맞춰져있을 때 시간이 되면 작동하는 부분
+    if (setFlag1 == 1){
+      if((setSc1<=(nowMillis - oldMillis))){
+        
+        for(int i = 1 ; i<=numberOfButton;i++){
+          normalSwitchServo(numberOfButton,i,onOffStat);
+        }
+
+        setFlag1 = 0;
+        
+        setHr1 = 0;
+        setMinute1 = 0;
+        setSc1 = 0;
+        setFlag1 = 0;
+        onOffStat = 0;
+        Serial.print("Alam worked!");
+      }
+    }
 
     
   }
@@ -295,15 +435,37 @@ int modeInitialize(String inputStr){ // 처음 모드 설정해주기
   
 }
 
-void alamSettingByTime(int hourIn, int minuteIn ,int secondIn){
-  
+void alamSettingByTime(int hourIn, int minuteIn ,int secondIn,int nowSec,int inittime){
+  setHr1 = hourIn;
+  setMinute1 = minuteIn;
+  setSc1 = secondIn;
+  setFlag1 =1;
+}
+
+void alamSettingByDate(int yearIn,int monthIn, int dateIn,int hourIn, int minuteIn,int secondIn){
+    setYr = yearIn;
+    setMonth = monthIn;
+    setDay = dateIn;
+    setHr = hourIn;
+    setMinute = minuteIn;
+    setSc = secondIn;
+    setFlag0 = 1;
   
 }
 
-void alamSettingByDate(int yearIn,int monthIn, int dateIn,int hourIn, int minuteIn,int second){
-  
+void switchToggleByAlam (){
+  if(setFlag1 == 1){
+    
+  }
+
+
+  if(setFlag0 == 1){
+    
+  }
   
 }
+
+
 
 
 void normalSwitchServoInitialSetting(int motorNum ,int stat){
