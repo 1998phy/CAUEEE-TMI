@@ -360,7 +360,7 @@ void loop(){
       
       alamSettingByDate(yrIn,monthIn,dayIn,hrIn,minuteIn,secondIn);
       
-      //HM10.print("설정완료");
+      HM10.print("설정완료");
     }
     //알람이 맞춰져있을 때 시간이 되면 작동하는 부분
     if (setFlag1 == 1){
@@ -378,6 +378,7 @@ void loop(){
         setFlag1 = 0;
         onOffStat = 0;
         Serial.print("Alam worked!");
+        HM10.print("알람작동");
       }
     }
 
