@@ -16,6 +16,9 @@
 #define ServoStandard 90 //서보모터 최초 초기화 각도설정
 #define ServoUp 102        //버튼 3개일때 서보 조정 각도
 #define ServoDown 76     //버튼 3개일때 서보 조정 각도
+#define ServoUpp 65
+
+
 #define ServoUp2 102       //버튼 2개일때 서보 조정 각도
 #define ServoDown2 76    //버튼 2개일때 서보 조정 각도
 #define ServoOn 30        //스위치를 움직이는 2개의 모터 조정 각도
@@ -217,23 +220,6 @@ void loop(){
     //일반 스위치 모드
     char string0 = '0';
     char string1 = '0';
-    /*
-    char string2 = '0';
-    char string3 = '0';
-    char string4 = '0';
-    char string5 = '0';
-    char string6 = '0';
-    char string7 = '0';
-    char string8 = '0';
-    char string9 = '0';
-    char string10 = '0';
-    char string11 = '0';
-    char string12 = '0';
-    char string13 = '0';
-    char string14 = '0';
-    char string15 = '0';
-    char string16 = '0';
-    char string17 = '0';*/
 
     
 
@@ -252,50 +238,6 @@ void loop(){
     }
 
     else if(stringnum[0] == 4){
-
-    //char temp[20] = {0};
-    
-
-
-
-    
-/*
-    string2 = inputString[2];
-    string3 = inputString[3];
-    string4 = inputString[4];
-    string5 = inputString[5];
-    string6 = inputString[6];
-    string7 = inputString[7];
-    string8 = inputString[8];
-    string9 = inputString[9];
-    string10 = inputString[10];
-    string11 = inputString[11];
-    string12 = inputString[12];
-    string13 = inputString[13];
-    string14 = inputString[14];
-    string15 = inputString[15];
-    string16 = inputString[16];
-    string17 = inputString[17];
-
-    
-    stringnum[2] = atoi(&string2);
-    stringnum[3] = atoi(&string3);
-    stringnum[4] = atoi(&string4);
-    stringnum[5] = atoi(&string5);
-    stringnum[6] = atoi(&string6);
-    stringnum[7] = atoi(&string7);
-    stringnum[8] = atoi(&string8);
-    stringnum[9] = atoi(&string9);
-    stringnum[10] = atoi(&string10);
-    stringnum[11] = atoi(&string11);
-    stringnum[12] = atoi(&string12);
-    stringnum[13] = atoi(&string13);
-    stringnum[14] = atoi(&string14);
-    stringnum[15] = atoi(&string15);
-    
-*/
-
-
       
       char string3[18]={0};
 
@@ -309,7 +251,7 @@ void loop(){
          
       }
 
-      Serial.println("Hello!");
+      
       int yrIn = 1000*stringnum[1] + 100*stringnum[2]+ 10*stringnum[3] + stringnum[4];
       int monthIn = 10*stringnum[5] + stringnum[6];
       int dayIn = 10*stringnum[7]+stringnum[8];
@@ -371,14 +313,13 @@ void loop(){
         }
 
         setFlag1 = 0;
-        
         setHr1 = 0;
         setMinute1 = 0;
         setSc1 = 0;
         setFlag1 = 0;
         onOffStat = 0;
         Serial.print("Alam worked!");
-        HM10.print("알람작동");
+        HM10.print("Alam worked!");
       }
     }
 
@@ -387,6 +328,11 @@ void loop(){
 
   else if (normalMode == 0 && elevatorMode == 1){
     //엘리베이터 비롯한 누르기만하는 스위치 모드
+
+
+
+
+
 
 
 
@@ -478,10 +424,13 @@ void normalSwitchServoInitialSetting(int motorNum ,int stat){
 
 
     motor2.write(ServoOn);
-    delay(Action);
     motor3.write(ServoOff);
+    Serial.println("motor2 initialized");
+    Serial.println("motor3 initialized");
     delay(Action);
+    //delay(Action);
     motor1.write(ServoStandard);
+    Serial.println("motor1 initialized");
     delay(Action);
     
     numberOfButton = motorNum;
@@ -561,6 +510,7 @@ void normalSwitchServo(int switchNum, int num, int stat){ //switchNum 은 스위
 
   if (switchNum == 1){
     if(num == 1 &&stat == 1){
+
       
       motor1.write(ServoUp2);
       delay(Action);
@@ -605,48 +555,66 @@ void normalSwitchServo(int switchNum, int num, int stat){ //switchNum 은 스위
   if(switchNum == 3){
     
     if(num ==1 && stat ==1 && initialStat1 == 0){
+      /*motor1.write(ServoUpp);
+      delay(Action);*/
       motor1.write(ServoUp);
       delay(Action);
+      //delay(Action);
       on();
       initialStat1 = 1;
       Serial.println("switch 1 on");
       HM10.print("switch 1 on");
     }
     if(num ==1 && stat ==0 && initialStat1 == 1){
+      /*motor1.write(ServoUpp);
+      delay(Action);*/
       motor1.write(ServoUp);
       delay(Action);
+      //delay(Action);
       off();
       initialStat1 = 0;
       Serial.println("switch 1 off");
       HM10.print("switch 1 off");
     }
     if(num ==2 && stat ==1 && initialStat2 == 0){
+      /*motor1.write(ServoUpp);
+      delay(Action);*/
       motor1.write(ServoStandard);
       delay(Action);
+      //delay(Action);
       on();
       initialStat2 = 1;
       Serial.println("switch 2 on");
       HM10.print("switch 2 on");
     }
     if(num ==2 && stat ==0 && initialStat2 == 1){
+      /*motor1.write(ServoUpp);
+      delay(Action);*/
       motor1.write(ServoStandard);
       delay(Action);
+      //delay(Action);
       off();
       initialStat2 = 0;
       Serial.println("switch 2 off");
       HM10.print("switch 2 off");
     }
     if(num ==3 && stat ==1 && initialStat3 == 0){
+      /*motor1.write(ServoUp);
+      delay(Action);*/
       motor1.write(ServoDown);
       delay(Action);
+     // delay(Action);
       on();
       initialStat3 = 1;
       Serial.println("switch 3 on");
       HM10.print("switch 3 on");
     }
     if(num ==3 && stat ==0 && initialStat3 == 1){
+      /*motor1.write(ServoUp);
+      delay(Action);*/
       motor1.write(ServoDown);
       delay(Action);
+      //delay(Action);
       off();
       initialStat3 = 0;
       Serial.println("switch 3 off");
@@ -678,13 +646,13 @@ void on(){
   motor3.write(ServoOn);
   delay(Action);
   motor3.write(ServoOff);
-  delay(Action);
+  //delay(Action);
 }
 
 void off(){
   motor2.write(ServoOff);
   delay(Action);
   motor2.write(ServoOn);
-  delay(Action);
+  //delay(Action);
 }
 
