@@ -13,9 +13,13 @@
 #define Motor2Port 10
 #define Motor3Port 11
 
-#define ServoStandard 90 //서보모터 최초 초기화 각도설정
+/*#define ServoStandard 90 //서보모터 최초 초기화 각도설정
 #define ServoUp 102        //버튼 3개일때 서보 조정 각도
-#define ServoDown 76     //버튼 3개일때 서보 조정 각도
+
+*/
+#define ServoStandard  80 //서보모터 최초 초기화 각도설정
+#define ServoUp 90        //버튼 3개일때 서보 조정 각도
+#define ServoDown 70     //버튼 3개일때 서보 조정 각도
 #define ServoUpp 65
 
 
@@ -83,6 +87,13 @@ long setSc1 = 0;
 long oldMillis;
 int onOffStat=0;
 
+int lightFlag10 = 0;  //엘리베이터 모드에서 사용하는 상태 명령어.
+int lightFlag11 = 0;
+int lightFlag20 = 0;
+int lightFlag21 = 0;
+int lightFlag30 = 0;
+int lightFlag31 = 0;
+
 
 
 
@@ -96,10 +107,10 @@ void alamSettingByTime(int hourIn, int minuteIn ,int secondIn);
 void alamSettingByDate(int yearIn,int monthIn, int dateIn,int hourIn, int minuteIn,int secondIn);
 
 void normalSwitchServoInitialSetting(int motorNum ,int initialStat);
-void normalSwitchServo(int switchNum,int stat);
+void normalSwitchServo(int switchNum, int num, int stat);
 
 void elevatorSwitchServoInitialSetting(int initialStat);
-void elevatorSwitchServo(int stat);
+void elevatorSwitchServo(int switchNum, int num, int stat);
 
 
 
@@ -310,6 +321,7 @@ void loop(){
         
         for(int i = 1 ; i<=numberOfButton;i++){
           normalSwitchServo(numberOfButton,i,onOffStat);
+          delay(800);
         }
 
         setFlag1 = 0;
@@ -330,7 +342,24 @@ void loop(){
     //엘리베이터 비롯한 누르기만하는 스위치 모드
 
 
+    char string0 = '0';
+    char string1 = '0';
 
+    
+
+    string0 = inputString[0];
+    string1 = inputString[1];
+    
+    
+    stringnum[0] = string0-48;
+    stringnum[1] = string1-48;
+
+    if ((stringnum[0] == 1) || (stringnum[0] == 2) ||(stringnum[0] ==3)){
+    //Serial.print("work");
+    elevatorSwitchServo(numberOfButton,stringnum[0],stringnum[1]);
+    Serial.print(stringnum[0]);
+    Serial.print(stringnum[1]);
+    }
 
 
 
@@ -358,7 +387,7 @@ int modeInitialize(String inputStr){ // 처음 모드 설정해주기
     elevatorMode = 0;
     char temp = '0';
     temp = inputString[1];
-    int tempnum = atoi(&temp);
+    int tempnum = temp-48;
     numberOfButton = tempnum;
     //Serial.print(numberOfButton);
     Serial.println("mode 1");
@@ -429,7 +458,7 @@ void normalSwitchServoInitialSetting(int motorNum ,int stat){
     Serial.println("motor3 initialized");
     delay(Action);
     //delay(Action);
-    motor1.write(ServoStandard);
+    motor1.write(ServoUp);
     Serial.println("motor1 initialized");
     delay(Action);
     
@@ -494,14 +523,6 @@ void normalSwitchServoInitialSetting(int motorNum ,int stat){
     
   }
 
-
-
-
-  
-  //motor1.detach();
-  //motor2.detach();
-  //motor3.detach();
-
   
 }
 
@@ -534,7 +555,32 @@ void normalSwitchServo(int switchNum, int num, int stat){ //switchNum 은 스위
   }
 
   if(switchNum == 2){
-    if(num ==2 && stat ==1){
+
+    if(num == 1 &&stat == 1&& initialStat1 == 0){
+
+      
+      motor1.write(ServoUp2);
+      delay(Action);
+      on();
+      initialStat1 = 1;
+      Serial.println("switch 1 on");
+      HM10.print("switch 1 on");
+    }
+    
+    if(num == 1 &&stat == 0 && initialStat1 == 1){
+      
+      motor1.write(ServoUp2);
+      delay(Action);
+      off();
+      initialStat1 = 0;
+      Serial.println("switch 1 off");
+      HM10.print("switch 1 off");
+    }
+
+
+
+    
+    if(num ==2 && stat ==1 && initialStat2 ==0){
       motor1.write(ServoDown2);
       delay(Action);
       on();
@@ -542,7 +588,7 @@ void normalSwitchServo(int switchNum, int num, int stat){ //switchNum 은 스위
       Serial.println("switch 2 on");
       HM10.print("switch 2 on");
     }
-    if(num ==2&& stat ==0){
+    if(num ==2&& stat ==0 && initialStat2 ==1){
       motor1.write(ServoDown2);
       delay(Action);
       off();
@@ -632,11 +678,280 @@ void normalSwitchServo(int switchNum, int num, int stat){ //switchNum 은 스위
 
 
 void elevatorSwitchServoInitialSetting(int angle){
+
+
+
+
+
+
+
   
 }
 
-void elevatorSwitchServo(int stat){
+void elevatorSwitchServo(int switchNum, int num, int stat){
+if (switchNum == 1){
+    if(num ==1 && stat ==1 && lightFlag11 == 0){
+      /*motor1.write(ServoUpp);
+      delay(Action);*/
+      motor1.write(ServoUp);
+      delay(Action);
+      
+      on1();
+      lightFlag11 = 1;
+      Serial.println("switch 11 on");
+      HM10.print("switch 11 on");
+    }
+    if(num ==1 && stat == 1 && lightFlag11 == 1){
+      motor1.write(ServoUp);
+      delay(Action);
+      
+      on0();
+      lightFlag11 = 0;
+      Serial.println("switch 11 off");
+      HM10.print("switch 11 off");
+    }
+    
+    if(num ==1 && stat ==0 && lightFlag10 == 1){
+      /*motor1.write(ServoUpp);
+      delay(Action);*/
+      motor1.write(ServoUp);
+      delay(Action);
+      
+      off0();
+      lightFlag10 = 0;
+      Serial.println("switch 10 off");
+      HM10.print("switch 10 off");
+    }
+    if(num == 1 &&stat == 0 && lightFlag10 == 0){
+      motor1.write(ServoUp);
+      delay(Action);
+      
+      off1();
+      lightFlag10 = 1;
+      Serial.println("switch 10 on");
+      HM10.print("switch 10 on");
+    }
 
+
+  }
+
+  if(switchNum == 2){
+    if(num ==1 && stat ==1 && lightFlag11 == 0){
+      /*motor1.write(ServoUpp);
+      delay(Action);*/
+      motor1.write(ServoUp);
+      delay(Action);
+      
+      on1();
+      lightFlag11 = 1;
+      Serial.println("switch 11 on");
+      HM10.print("switch 11 on");
+    }
+    if(num ==1 && stat == 1 && lightFlag11 == 1){
+      motor1.write(ServoUp);
+      delay(Action);
+      
+      on0();
+      lightFlag11 = 0;
+      Serial.println("switch 11 off");
+      HM10.print("switch 11 off");
+    }
+    
+    if(num ==1 && stat ==0 && lightFlag10 == 1){
+      /*motor1.write(ServoUpp);
+      delay(Action);*/
+      motor1.write(ServoUp);
+      delay(Action);
+      
+      off0();
+      lightFlag10 = 0;
+      Serial.println("switch 10 off");
+      HM10.print("switch 10 off");
+    }
+    if(num == 1 &&stat == 0 && lightFlag10 == 0){
+      motor1.write(ServoUp);
+      delay(Action);
+      
+      off1();
+      lightFlag10 = 1;
+      Serial.println("switch 10 on");
+      HM10.print("switch 10 on");
+    }
+    
+    if(num ==2 && stat ==1 && lightFlag21 == 0){
+      
+      motor1.write(ServoStandard);
+      delay(Action);
+      
+      on1();
+      lightFlag21 = 1;
+      Serial.println("switch 21 on");
+      HM10.print("switch 21 on");
+    }
+    if(num ==2 && stat  == 1 && lightFlag21 == 1){
+       motor1.write(ServoStandard);
+      delay(Action);
+      
+      on0();
+      lightFlag21 = 0;
+      Serial.println("switch 21 off");
+      HM10.print("switch 21 off");
+    }
+
+    
+    if(num ==2 && stat ==0 && lightFlag20 == 1){
+      
+      motor1.write(ServoStandard);
+      delay(Action);
+      
+      off0();
+      lightFlag20 = 1;
+      Serial.println("switch 2 off");
+      HM10.print("switch 2 off");
+    }
+    if(num ==2 && stat ==0 && lightFlag20 == 0){
+      
+      motor1.write(ServoStandard);
+      delay(Action);
+     
+      off1();
+      lightFlag20 = 1;
+      Serial.println("switch 2 on");
+      HM10.print("switch 2 on");
+    }
+  }
+
+  if(switchNum == 3){
+    
+    if(num ==1 && stat ==1 && lightFlag11 == 0){
+      /*motor1.write(ServoUpp);
+      delay(Action);*/
+      motor1.write(ServoUp);
+      delay(Action);
+      
+      on1();
+      lightFlag11 = 1;
+      Serial.println("switch 11 on");
+      HM10.print("switch 11 on");
+    }
+    if(num ==1 && stat == 1 && lightFlag11 == 1){
+      motor1.write(ServoUp);
+      delay(Action);
+      
+      on0();
+      lightFlag11 = 0;
+      Serial.println("switch 11 off");
+      HM10.print("switch 11 off");
+    }
+    
+    if(num ==1 && stat ==0 && lightFlag10 == 1){
+      /*motor1.write(ServoUpp);
+      delay(Action);*/
+      motor1.write(ServoUp);
+      delay(Action);
+      
+      off0();
+      lightFlag10 = 0;
+      Serial.println("switch 10 off");
+      HM10.print("switch 10 off");
+    }
+    if(num == 1 &&stat == 0 && lightFlag10 == 0){
+      motor1.write(ServoUp);
+      delay(Action);
+      
+      off1();
+      lightFlag10 = 1;
+      Serial.println("switch 10 on");
+      HM10.print("switch 10 on");
+    }
+    
+    if(num ==2 && stat ==1 && lightFlag21 == 0){
+      
+      motor1.write(ServoStandard);
+      delay(Action);
+      
+      on1();
+      lightFlag21 = 1;
+      Serial.println("switch 21 on");
+      HM10.print("switch 21 on");
+    }
+    if(num == 2 && stat == 1 && lightFlag21 == 1){
+       motor1.write(ServoStandard);
+      delay(Action);
+      
+      on0();
+      lightFlag21 = 0;
+      Serial.println("switch 21 off");
+      HM10.print("switch 21 off");
+    }
+
+    
+    if(num == 2 && stat == 0 && lightFlag20 == 1){
+      
+      motor1.write(ServoStandard);
+      delay(Action);
+      
+      off0();
+      lightFlag20 = 1;
+      Serial.println("switch 2 off");
+      HM10.print("switch 2 off");
+    }
+    if(num ==2 && stat ==0 && lightFlag20 == 0){
+      
+      motor1.write(ServoStandard);
+      delay(Action);
+     
+      off1();
+      lightFlag20 = 1;
+      Serial.println("switch 2 on");
+      HM10.print("switch 2 on");
+    }
+    
+    
+    if(num ==3 && stat ==1 && lightFlag31 == 0){
+      
+      motor1.write(ServoDown);
+      delay(Action);
+     
+      on1();
+      lightFlag31 = 1;
+      Serial.println("switch 31 on");
+      HM10.print("switch 31 on");
+    }
+    if(num ==3 && stat ==1 && lightFlag31 == 1){
+      
+       motor1.write(ServoDown);
+      delay(Action);
+     
+      on0();
+      lightFlag31 = 0;
+      Serial.println("switch 31 off");
+      HM10.print("switch 31 off");
+    }
+
+    
+    if(num ==3 && stat ==0 && lightFlag30 == 1){
+      
+      motor1.write(ServoDown);
+      delay(Action);
+ 
+      off0();
+      lightFlag30 = 0;
+      Serial.println("switch 30 off");
+      HM10.print("switch 30 off");
+      
+    }
+    if(num ==3 && stat ==0 && lightFlag30 == 0)
+
+      motor1.write(ServoDown);
+      delay(Action);
+ 
+      off1();
+      lightFlag30 = 1;
+      Serial.println("switch 30 on");
+      HM10.print("switch 30 on");
+    
+  }
   
 }
 
@@ -646,13 +961,39 @@ void on(){
   motor3.write(ServoOn);
   delay(Action);
   motor3.write(ServoOff);
-  //delay(Action);
+ 
 }
+
+
+void on0(){
+  
+  motor3.write(ServoOff);
+  delay(Action);
+}
+
+
+void on1(){
+  motor3.write(ServoOn);
+  delay(Action);
+  
+}
+
+
 
 void off(){
   motor2.write(ServoOff);
   delay(Action);
   motor2.write(ServoOn);
-  //delay(Action);
+
+}
+
+void off0(){
+  motor2.write(ServoOff);
+  delay(Action);
+}
+
+void off1(){
+  motor2.write(ServoOn);
+  delay(Action);
 }
 
