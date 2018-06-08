@@ -115,8 +115,12 @@ void elevatorSwitchServo(int switchNum, int num, int stat);
 
 
 void on();
-void off();
+void on0();
+void on1();
 
+void off();
+void off0();
+void off1();
 
 
 //Time t = getTime();
@@ -180,6 +184,11 @@ void setup() {
 
   if (normalMode == 1){
     
+    normalSwitchServoInitialSetting(numberOfButton,string2num);
+  }
+  
+  if (elevatorMode == 1){
+
     normalSwitchServoInitialSetting(numberOfButton,string2num);
   }
 
@@ -397,7 +406,13 @@ int modeInitialize(String inputStr){ // 처음 모드 설정해주기
   else if(inputString[0] == '1'){
     elevatorMode = 1;
     normalMode = 0;
-    numberOfButton = 1;
+    
+    char temp = '0';
+    temp = inputString[1];
+    int tempnum = temp-48;
+    numberOfButton = tempnum;
+    
+    
     Serial.println("mode 2");
     return 1;
     
@@ -689,6 +704,7 @@ void elevatorSwitchServoInitialSetting(int angle){
 }
 
 void elevatorSwitchServo(int switchNum, int num, int stat){
+  while(1){
 if (switchNum == 1){
     if(num ==1 && stat ==1 && lightFlag11 == 0){
       /*motor1.write(ServoUpp);
@@ -700,6 +716,7 @@ if (switchNum == 1){
       lightFlag11 = 1;
       Serial.println("switch 11 on");
       HM10.print("switch 11 on");
+      break;
     }
     if(num ==1 && stat == 1 && lightFlag11 == 1){
       motor1.write(ServoUp);
@@ -709,6 +726,7 @@ if (switchNum == 1){
       lightFlag11 = 0;
       Serial.println("switch 11 off");
       HM10.print("switch 11 off");
+      break;
     }
     
     if(num ==1 && stat ==0 && lightFlag10 == 1){
@@ -721,6 +739,7 @@ if (switchNum == 1){
       lightFlag10 = 0;
       Serial.println("switch 10 off");
       HM10.print("switch 10 off");
+      break;
     }
     if(num == 1 &&stat == 0 && lightFlag10 == 0){
       motor1.write(ServoUp);
@@ -730,6 +749,7 @@ if (switchNum == 1){
       lightFlag10 = 1;
       Serial.println("switch 10 on");
       HM10.print("switch 10 on");
+      break;
     }
 
 
@@ -746,6 +766,7 @@ if (switchNum == 1){
       lightFlag11 = 1;
       Serial.println("switch 11 on");
       HM10.print("switch 11 on");
+      break;
     }
     if(num ==1 && stat == 1 && lightFlag11 == 1){
       motor1.write(ServoUp);
@@ -755,6 +776,7 @@ if (switchNum == 1){
       lightFlag11 = 0;
       Serial.println("switch 11 off");
       HM10.print("switch 11 off");
+      break;
     }
     
     if(num ==1 && stat ==0 && lightFlag10 == 1){
@@ -767,6 +789,7 @@ if (switchNum == 1){
       lightFlag10 = 0;
       Serial.println("switch 10 off");
       HM10.print("switch 10 off");
+      break;
     }
     if(num == 1 &&stat == 0 && lightFlag10 == 0){
       motor1.write(ServoUp);
@@ -776,6 +799,7 @@ if (switchNum == 1){
       lightFlag10 = 1;
       Serial.println("switch 10 on");
       HM10.print("switch 10 on");
+      break;
     }
     
     if(num ==2 && stat ==1 && lightFlag21 == 0){
@@ -787,6 +811,7 @@ if (switchNum == 1){
       lightFlag21 = 1;
       Serial.println("switch 21 on");
       HM10.print("switch 21 on");
+      break;
     }
     if(num ==2 && stat  == 1 && lightFlag21 == 1){
        motor1.write(ServoStandard);
@@ -796,6 +821,7 @@ if (switchNum == 1){
       lightFlag21 = 0;
       Serial.println("switch 21 off");
       HM10.print("switch 21 off");
+      break;
     }
 
     
@@ -808,6 +834,7 @@ if (switchNum == 1){
       lightFlag20 = 1;
       Serial.println("switch 2 off");
       HM10.print("switch 2 off");
+      break;
     }
     if(num ==2 && stat ==0 && lightFlag20 == 0){
       
@@ -818,6 +845,7 @@ if (switchNum == 1){
       lightFlag20 = 1;
       Serial.println("switch 2 on");
       HM10.print("switch 2 on");
+      break;
     }
   }
 
@@ -833,6 +861,7 @@ if (switchNum == 1){
       lightFlag11 = 1;
       Serial.println("switch 11 on");
       HM10.print("switch 11 on");
+      break;
     }
     if(num ==1 && stat == 1 && lightFlag11 == 1){
       motor1.write(ServoUp);
@@ -842,6 +871,7 @@ if (switchNum == 1){
       lightFlag11 = 0;
       Serial.println("switch 11 off");
       HM10.print("switch 11 off");
+      break;
     }
     
     if(num ==1 && stat ==0 && lightFlag10 == 1){
@@ -854,6 +884,7 @@ if (switchNum == 1){
       lightFlag10 = 0;
       Serial.println("switch 10 off");
       HM10.print("switch 10 off");
+      break;
     }
     if(num == 1 &&stat == 0 && lightFlag10 == 0){
       motor1.write(ServoUp);
@@ -863,6 +894,7 @@ if (switchNum == 1){
       lightFlag10 = 1;
       Serial.println("switch 10 on");
       HM10.print("switch 10 on");
+      break;
     }
     
     if(num ==2 && stat ==1 && lightFlag21 == 0){
@@ -874,6 +906,7 @@ if (switchNum == 1){
       lightFlag21 = 1;
       Serial.println("switch 21 on");
       HM10.print("switch 21 on");
+      break;
     }
     if(num == 2 && stat == 1 && lightFlag21 == 1){
        motor1.write(ServoStandard);
@@ -883,6 +916,7 @@ if (switchNum == 1){
       lightFlag21 = 0;
       Serial.println("switch 21 off");
       HM10.print("switch 21 off");
+      break;
     }
 
     
@@ -895,6 +929,7 @@ if (switchNum == 1){
       lightFlag20 = 1;
       Serial.println("switch 2 off");
       HM10.print("switch 2 off");
+      break;
     }
     if(num ==2 && stat ==0 && lightFlag20 == 0){
       
@@ -905,6 +940,7 @@ if (switchNum == 1){
       lightFlag20 = 1;
       Serial.println("switch 2 on");
       HM10.print("switch 2 on");
+      break;
     }
     
     
@@ -917,6 +953,7 @@ if (switchNum == 1){
       lightFlag31 = 1;
       Serial.println("switch 31 on");
       HM10.print("switch 31 on");
+      break;
     }
     if(num ==3 && stat ==1 && lightFlag31 == 1){
       
@@ -927,6 +964,7 @@ if (switchNum == 1){
       lightFlag31 = 0;
       Serial.println("switch 31 off");
       HM10.print("switch 31 off");
+      break;
     }
 
     
@@ -939,7 +977,7 @@ if (switchNum == 1){
       lightFlag30 = 0;
       Serial.println("switch 30 off");
       HM10.print("switch 30 off");
-      
+      break;
     }
     if(num ==3 && stat ==0 && lightFlag30 == 0)
 
@@ -950,9 +988,9 @@ if (switchNum == 1){
       lightFlag30 = 1;
       Serial.println("switch 30 on");
       HM10.print("switch 30 on");
-    
+      break;
   }
-  
+}
 }
 
 
